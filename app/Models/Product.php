@@ -28,5 +28,15 @@ public function category()
 {
     return $this->belongsTo(Category::class);
 }
+// app/Models/Product.php
+public function reviews()
+{
+    return $this->hasMany(Review::class);
+}
+
+public function orderItems()
+{
+    return $this->hasMany(OrderItem::class);
+}
 
 }
