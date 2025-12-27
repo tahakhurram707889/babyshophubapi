@@ -10,7 +10,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
         <div class="container">
             <a class="navbar-brand" href="{{ route('home') }}">👶 Baby Shop Hub</a>
-            
+            <!-- Baby shop -->
             <div class="navbar-nav ms-auto">
                 @auth
                     @if(Auth::user()->is_admin)
