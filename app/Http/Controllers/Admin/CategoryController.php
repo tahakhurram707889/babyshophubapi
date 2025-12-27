@@ -1,11 +1,10 @@
 <?php
-
-// app/Http/Controllers/Admin/CategoryController.php
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
@@ -22,9 +21,18 @@ class CategoryController extends Controller
     
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|string|max:255']);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:categories,slug'
+        ]);
         
-        Category::create($request->all());
+        // Generate slug if not provided
+        $slug = $request->slug ? Str::slug($request->slug) : Str::slug($request->name);
+        
+        Category::create([
+            'name' => $request->name,
+            'slug' => $slug,
+        ]);
         
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category created successfully.');
@@ -40,9 +48,18 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
         
-        $request->validate(['name' => 'required|string|max:255']);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:categories,slug,' . $id
+        ]);
         
-        $category->update($request->all());
+        // Generate slug if not provided
+        $slug = $request->slug ? Str::slug($request->slug) : Str::slug($request->name);
+        
+        $category->update([
+            'name' => $request->name,
+            'slug' => $slug,
+        ]);
         
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category updated successfully.');

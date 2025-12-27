@@ -12,47 +12,64 @@ class OrderController extends Controller
 {
     // ⭐ Place Order
     public function placeOrder(Request $request)
-    {
-        $user = $request->user();
+{
+    $user = $request->user();
 
-        $cartItems = CartItem::with('product')->where('user_id', $user->id)->get();
+    // 1️⃣ Get user's cart
+    $cart = \App\Models\Cart::where('user_id', $user->id)->first();
 
-        if ($cartItems->isEmpty()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Your cart is empty.'
-            ], 400);
-        }
-
-        // Calculate total
-        $total = $cartItems->sum(fn($item) => $item->quantity * $item->product->price);
-
-        // Create Order
-        $order = Order::create([
-            'user_id' => $user->id,
-            'total_amount' => $total,
-            'status' => 'pending',
-        ]);
-
-        // Create Order Items
-        foreach ($cartItems as $cartItem) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $cartItem->product_id,
-                'quantity' => $cartItem->quantity,
-                'price' => $cartItem->product->price
-            ]);
-        }
-
-        // Clear Cart
-        CartItem::where('user_id', $user->id)->delete();
-
+    if (!$cart) {
         return response()->json([
-            'status' => true,
-            'message' => 'Order placed successfully.',
-            'order' => $order
-        ], 201);
+            'status' => false,
+            'message' => 'Your cart is empty.'
+        ], 400);
     }
+
+    // 2️⃣ Get cart items via cart_id
+    $cartItems = CartItem::with('product')
+        ->where('cart_id', $cart->id)
+        ->get();
+
+    if ($cartItems->isEmpty()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Your cart is empty.'
+        ], 400);
+    }
+
+    // 3️⃣ Calculate total
+    $total = $cartItems->sum(fn($item) =>
+        $item->quantity * $item->product->price
+    );
+
+    // 4️⃣ Create order
+    $order = Order::create([
+        'user_id' => $user->id,
+        'total_amount' => $total,
+        'status' => 'pending',
+        'payment_status' => 'pending',
+    ]);
+
+    // 5️⃣ Create order items
+    foreach ($cartItems as $item) {
+        OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $item->product_id,
+            'quantity' => $item->quantity,
+            'price' => $item->product->price,
+        ]);
+    }
+
+    // 6️⃣ Clear cart items
+    CartItem::where('cart_id', $cart->id)->delete();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Order placed successfully',
+        'order' => $order
+    ], 201);
+}
+
 
     // ⭐ Order History
     public function orderHistory(Request $request)
@@ -88,4 +105,6 @@ class OrderController extends Controller
             'order' => $order
         ]);
     }
+
+   
 }

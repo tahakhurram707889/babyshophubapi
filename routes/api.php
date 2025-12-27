@@ -68,32 +68,38 @@ Route::middleware('auth:sanctum')->group(function () {
      * Reviews
      */
     Route::post('/reviews', [ReviewController::class, 'store']);
-    Route::get('/reviews/{product_id}', [ReviewController::class, 'productReviews']);
+    Route::put('/reviews/{id}', [ReviewController::class, 'update']);
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
+    Route::get('/user/reviews', [ReviewController::class, 'userReviews']);
 
     /**
      * Address
      */
     Route::post('/address', [AddressController::class, 'addAddress']);
     Route::get('/my-addresses', [AddressController::class, 'myAddresses']);
+    Route::put('/address/{id}', [AddressController::class, 'updateAddress']);
+    Route::delete('/address/{id}', [AddressController::class, 'deleteAddress']);
+    Route::patch('/address/{id}/default', [AddressController::class, 'setDefaultAddress']);
+            
 });
 
-Route::prefix('admin')->middleware(['auth:sanctum','admin'])->group(function(){
-    // Products
-    Route::get('/products', [\App\Http\Controllers\Api\Admin\ProductController::class,'index']);
-    Route::post('/products', [\App\Http\Controllers\Api\Admin\ProductController::class,'store']);
-    Route::get('/products/{id}', [\App\Http\Controllers\Api\Admin\ProductController::class,'show']);
-    Route::put('/products/{id}', [\App\Http\Controllers\Api\Admin\ProductController::class,'update']);
-    Route::delete('/products/{id}', [\App\Http\Controllers\Api\Admin\ProductController::class,'destroy']);
+// Route::prefix('admin')->middleware(['auth:sanctum','admin'])->group(function(){
+//     // Products
+//     Route::get('/products', [\App\Http\Controllers\Api\Admin\ProductController::class,'index']);
+//     Route::post('/products', [\App\Http\Controllers\Api\Admin\ProductController::class,'store']);
+//     Route::get('/products/{id}', [\App\Http\Controllers\Api\Admin\ProductController::class,'show']);
+//     Route::put('/products/{id}', [\App\Http\Controllers\Api\Admin\ProductController::class,'update']);
+//     Route::delete('/products/{id}', [\App\Http\Controllers\Api\Admin\ProductController::class,'destroy']);
 
-    // Categories
-    Route::get('/categories', [\App\Http\Controllers\Api\Admin\CategoryController::class,'index']);
-    Route::post('/categories', [\App\Http\Controllers\Api\Admin\CategoryController::class,'store']);
-    Route::put('/categories/{id}', [\App\Http\Controllers\Api\Admin\CategoryController::class,'update']);
-    Route::delete('/categories/{id}', [\App\Http\Controllers\Api\Admin\CategoryController::class,'destroy']);
+//     // Categories
+//     Route::get('/categories', [\App\Http\Controllers\Api\Admin\CategoryController::class,'index']);
+//     Route::post('/categories', [\App\Http\Controllers\Api\Admin\CategoryController::class,'store']);
+//     Route::put('/categories/{id}', [\App\Http\Controllers\Api\Admin\CategoryController::class,'update']);
+//     Route::delete('/categories/{id}', [\App\Http\Controllers\Api\Admin\CategoryController::class,'destroy']);
 
-    // Orders
-    Route::get('/orders', [\App\Http\Controllers\Api\Admin\OrderController::class,'index']);
-    Route::put('/orders/{id}/status', [\App\Http\Controllers\Api\Admin\OrderController::class,'updateStatus']);
+//     // Orders
+//     Route::get('/orders', [\App\Http\Controllers\Api\Admin\OrderController::class,'index']);
+//     Route::put('/orders/{id}/status', [\App\Http\Controllers\Api\Admin\OrderController::class,'updateStatus']);
 
-     Route::get('/dashboard', [DashboardController::class, 'stats']);
-});
+//      Route::get('/dashboard', [DashboardController::class, 'stats']);
+// });

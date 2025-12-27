@@ -1,6 +1,6 @@
 <?php
-
-namespace App\Http\Controllers\Api\Admin;
+// app/Http\Controllers\Admin\DashboardController.php
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function stats()
+    public function index()
     {
         // Total Users
         $totalUsers = User::count();
@@ -24,14 +24,15 @@ class DashboardController extends Controller
         // Total Revenue
         $totalRevenue = Order::where('status', 'completed')->sum('total_amount');
 
-        return response()->json([
-            'message' => 'Dashboard Stats Loaded',
-            'data' => [
-                'total_users'    => $totalUsers,
-                'total_products' => $totalProducts,
-                'total_orders'   => $totalOrders,
-                'total_revenue'  => $totalRevenue,
-            ]
-        ], 200);
+        // Recent Orders
+        $recentOrders = Order::with('user')->latest()->take(5)->get();
+        
+        return view('admin.dashboard', compact(
+            'totalUsers', 
+            'totalProducts', 
+            'totalOrders', 
+            'totalRevenue',
+            'recentOrders'
+        ));
     }
 }

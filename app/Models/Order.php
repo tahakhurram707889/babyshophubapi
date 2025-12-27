@@ -27,4 +27,21 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+     public function getCustomerAddressAttribute()
+    {
+        if ($this->user && $this->user->address) {
+            return $this->user->address;
+        }
+        return null;
+    }
+    
+    // Get phone through user
+    public function getCustomerPhoneAttribute()
+    {
+        if ($this->user && $this->user->address) {
+            return $this->user->address->phone;
+        }
+        return null;
+    }
 }

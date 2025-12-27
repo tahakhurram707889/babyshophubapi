@@ -20,11 +20,18 @@ class ReviewRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'product_id' => 'required|exists:products,id',
-            'rating'     => 'required|numeric|min:1|max:5',
-            'review'     => 'required|string|max:500',
+        // For update, product_id might not be required
+        $rules = [
+            'rating' => 'required|integer|min:1|max:5',
+            'review' => 'required|string|max:500',
         ];
+
+        // Only require product_id for store, not for update
+        if ($this->isMethod('post')) {
+            $rules['product_id'] = 'required|exists:products,id';
+        }
+
+        return $rules;
     }
 
     public function messages(): array
@@ -33,10 +40,11 @@ class ReviewRequest extends FormRequest
             'product_id.required' => 'Please select a product.',
             'product_id.exists'   => 'The selected product does not exist.',
             'rating.required'     => 'Rating is required.',
-            'rating.numeric'      => 'Rating must be a number.',
-            'rating.min'          => 'Rating must be at least 1.',
-            'rating.max'          => 'Rating cannot be more than 5.',
+            'rating.integer'      => 'Rating must be a whole number.',
+            'rating.min'          => 'Rating must be at least 1 star.',
+            'rating.max'          => 'Rating cannot be more than 5 stars.',
             'review.required'     => 'Review text is required.',
+            'review.string'       => 'Review must be text.',
             'review.max'          => 'Review cannot exceed 500 characters.',
         ];
     }
